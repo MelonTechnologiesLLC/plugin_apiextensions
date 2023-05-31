@@ -1,0 +1,39 @@
+{
+    "hooks": [
+        {
+            "name": "dw.ocapi.shop.product_search.beforeGET",
+            "script": "./cartridge/scripts/hooks/apis/product_search.js"
+        },
+        {
+            "name": "dw.ocapi.shop.product_search.modifyGETResponse",
+            "script": "./cartridge/scripts/hooks/apis/product_search.js"
+        },
+
+        {
+            "name": "dw.ocapi.shop.category.beforeGET",
+            "script": "./cartridge/scripts/hooks/apis/category.js"
+        },
+        {
+            "name": "dw.ocapi.shop.category.modifyGETResponse",
+            "script": "./cartridge/scripts/hooks/apis/category.js"
+        },
+
+        {
+            "name": "dw.ocapi.shop.product.beforeGET",
+            "script": "./cartridge/scripts/hooks/apis/product.js"
+        },
+        {
+            "name": "dw.ocapi.shop.product.modifyGETResponse",
+            "script": "./cartridge/scripts/hooks/apis/product.js"
+        },
+
+        {
+            "name": "dw.ocapi.shop.search_suggestion.beforeGET",
+            "script": "./cartridge/scripts/hooks/apis/search_suggestion.js"
+        },
+        {
+            "name": "dw.ocapi.shop.search_suggestion.modifyGETResponse",
+            "script": "./cartridge/scripts/hooks/apis/search_suggestion.js"
+        }
+    ]
+}
