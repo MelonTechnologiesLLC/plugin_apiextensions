@@ -25,7 +25,7 @@ HttpParam.prototype = Object.create({
 		try {
 			return this.value ? JSON.parse(this.value) : null;
 		} catch (e) {
-			throw new Error('Parameter [' + this.name + '] value is not valid JSON.\nValue: [' + this.value +  ']\nError: ' + e.message);
+			throw new Error('HTTP Parameter [' + this.name + '] value is not valid JSON.\nValue: [' + this.value +  ']\nError: ' + e.message);
 		}
 	},
 

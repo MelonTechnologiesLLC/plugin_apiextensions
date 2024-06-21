@@ -62,7 +62,7 @@ Example config:
 		"product": {
 			"OcapiMasterPrices": true
 		}
-	},,
+	},
 
 	"00000000-0000-0000-0000-000000000000": {
 		"product_search": {
@@ -81,13 +81,9 @@ Example config:
 
 ## Usage
 
-### SCAPI
-SCAPI APIs do not allow custom parameters.  
-Use as usual (control is done from Configuration).
-
-### OCAPI
-OCAPI APIs allow passing custom parameters.  
-Framework allows clients (if allowed - see above) to:
+### Control and settings
+OCAPI (and recently SCPI) APIs allow passing custom http parameters.  
+Framework allows clients (if allowed in the site pref - see above) to:
 - enable endpoint extensions
 - set extension settings
 
@@ -99,10 +95,13 @@ Example:
 ```
 
 #### Set extension settings
-Pass settings as JSON using ``{ExtensionName}`` parameter.  
+Pass settings as JSON using ``{ExtensionName}`` _(or ``c_{ExtensionName}``)_ http parameter.  
 Example:
 ```
 ...&extensions=CustomAttributes&CustomAttributes={"attributes": ["isNew", "isSale"]}
+```
+```
+...&c_extensions=CustomAttributes&c_CustomAttributes={"attributes": ["isNew", "isSale"]}
 ```
 
 ## Monitoring 

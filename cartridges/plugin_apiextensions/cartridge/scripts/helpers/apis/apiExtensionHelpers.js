@@ -126,10 +126,6 @@ ApiExtensionsConfig._getValidExtensionConfig = function (extConfigValue) {
 		throw new Error('Unsupported extension config [' + JSON.stringify(extConfigValue) + ']. Expecting [true] or [object].');
 	}
 
-	if (request.isSCAPI()) {
-		delete res.allowed;
-	}
-
 	return res;
 }
 
@@ -145,7 +141,7 @@ ApiExtensionsConfig._getValidExtensionConfig = function (extConfigValue) {
 /**
  * @extends dw.system.Logger
  */
-ApiExtensionsLogger = Object.create(
+var ApiExtensionsLogger = Object.create(
 	Logger.getLogger(ApiExtensionsConfig.LOG_FILE, ApiExtensionsConfig.LOG_GROUP), {
 
 	exception: {
@@ -277,15 +273,14 @@ ApiExtension.prototype.getRuntimeSettings = function (defaultSettings) {
 	var config = ApiExtensionsConfig.getConfig(this.endpoint, this.name);
 	Object.assign(runtimeSettings, config.settings);
 
-	if (!request.isSCAPI()) {
-		var ApiRequest = require('*/cartridge/scripts/helpers/apis/apiRequestHelper');
-		var requestedSettings = ApiRequest.param(this.name).getJsonValue();
-		if (requestedSettings) {
-			if (!config.allowed) {
-				throw new Error(sprintf('Requesting settings for extension [{0}/{1}] is now allowed.', this.endpoint, this.name));
-			}
-			Object.assign(runtimeSettings, requestedSettings);
+	var ApiRequest = require('*/cartridge/scripts/helpers/apis/apiRequestHelper');
+	var requestedSettings = ApiRequest.param(this.name).getJsonValue()
+		|| ApiRequest.param('c_' + this.name).getJsonValue();
+	if (requestedSettings) {
+		if (!config.allowed) {
+			throw new Error(sprintf('Requesting settings for extension [{0}/{1}] is now allowed.', this.endpoint, this.name));
 		}
+		Object.assign(runtimeSettings, requestedSettings);
 	}
 
 	return runtimeSettings;
@@ -357,22 +352,22 @@ ApiEndpoint.prototype = {
 			}
 		}
 
-		if (!request.isSCAPI()) {
-			var ApiRequest = require('*/cartridge/scripts/helpers/apis/apiRequestHelper');
-			var requestedExtensions = ApiRequest.param('extensions').values || [];
-			requestedExtensions.forEach(function (requestedExtension) {
-				var extConf = endpointConfig[requestedExtension];
-				if (!(extConf === true || (extConf && extConf.allowed === true))) {
-					// MTODO: log error; throw 400 error type. (ex. request non allowed ext)
-					throw new Error(sprintf('Requested extension [{0}/{1}] is not allowed.', this.endpoint, requestedExtension));
-				}
-				if (enabledExtensions.indexOf(requestedExtension) !== -1) {
-					ApiExtensionsLogger.warn('Requested extension [{0}] is already enabled.', requestedExtension);
-					return;
-				}
-				enabledExtensions.push(requestedExtension);
-			}, this);
-		}
+		var ApiRequest = require('*/cartridge/scripts/helpers/apis/apiRequestHelper');
+		var requestedExtensions = ApiRequest.param('extensions').values
+				.concat(ApiRequest.param('c_extensions').values);
+		requestedExtensions.forEach(function (requestedExtension) {
+			var extConf = endpointConfig[requestedExtension];
+			if (!(extConf === true || (extConf && extConf.allowed === true))) {
+				// MTODO: log error; throw 400 error type. (ex. request non allowed ext)
+				throw new Error(sprintf('Requested extension [{0}/{1}] is not allowed.', this.endpoint, requestedExtension));
+			}
+			if (enabledExtensions.indexOf(requestedExtension) !== -1) {
+				ApiExtensionsLogger.warn('Requested extension [{0}] is already enabled.', requestedExtension);
+				return;
+			}
+			enabledExtensions.push(requestedExtension);
+		}, this);
+
 		return enabledExtensions;
 	},
 
